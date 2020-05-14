@@ -19,7 +19,14 @@ function pop_validatebids()
     function validateCB(src, event)
         obj = findobj('Tag','outputfolder');
         dir = obj.String;
-        system([fullfile(fileparts(which('pop_exportbids')), 'bids-validator-macos') ' ' dir]); edit eegplugin_bids.m
+        if isunix
+            validator = 'bids-validator-linux';
+        elseif ismac
+            validator = 'bids-validator-macos';
+        elseif ispc
+            validator = 'bids-validator-win.exe';
+        end
+        system([fullfile(fileparts(which('pop_exportbids')), validator) ' ' dir]); edit eegplugin_bids.m
       
         
     end
