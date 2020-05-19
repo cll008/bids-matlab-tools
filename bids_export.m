@@ -684,7 +684,7 @@ for iEvent = 1:length(EEG.event)
 
                 case 'sample'
                     if isfield(EEG.event, tmpField)
-                        sample = num2str(EEG.event.(tmpField));
+                        sample = num2str(EEG.event(iEvent).(tmpField));
                     else
                         sample = 'n/a';
                     end
