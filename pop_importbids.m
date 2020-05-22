@@ -362,7 +362,7 @@ res = loadtxt( fileName, 'verbose', 'off', 'delim', 9);
 
 for iCol = 1:size(res,2)
     % search for NaNs
-    indNaNs = cellfun(@(x)strcmpi('n/a', x), res(:,iCol));
+    indNaNs = cellfun(@(x)strcmpi('n/a', lower(x)) || strcmpi('na', lower(x)), res(:,iCol));
     if ~isempty(indNaNs)
         allNonNaNVals = res(find(~indNaNs),iCol);
         allNonNaNVals(1) = []; % header
