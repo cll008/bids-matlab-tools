@@ -365,7 +365,7 @@ res = loadtxt( fileName, 'verbose', 'off', 'delim', 9);
 
 for iCol = 1:size(res,2)
     % search for NaNs
-    indNaNs = cellfun(@(x)strcmpi('n/a', lower(x)) || strcmpi('na', lower(x)), res(:,iCol));
+    indNaNs = cellfun(@(x)strcmpi('n/a', lower(x)) || strcmpi('na', lower(x)) || strcmpi('nan', lower(x)), res(:,iCol));
     if ~isempty(indNaNs)
         allNonNaNVals = res(find(~indNaNs),iCol);
         allNonNaNVals(1) = []; % header
@@ -373,7 +373,15 @@ for iCol = 1:size(res,2)
         if all(testNumeric)
             res(find(indNaNs),iCol) = { NaN };
         elseif ~all(~testNumeric)
-            error('Mixture of numeric and non-numeric values in table');
+            warning('Mixture of numeric and non-numeric values in table. Number will be converted into string');
+            res(:,iCol) = cellfun(@(x) toString(x{1}), {res(:,iCol)},'UniformOutput',false);
         end
     end
 end
+
+function str = toString(x)
+    if isnumeric(x)
+        str = num2str(x);
+    else
+        str = x;
+    end
