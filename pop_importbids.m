@@ -41,7 +41,7 @@
 % along with this program; if not, write to the Free Software
 % Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-function [STUDY, ALLEEG, bids, commands] = pop_importbids(bidsFolder, varargin)
+function [STUDY, ALLEEG, EEG, bids, commands] = pop_importbids(bidsFolder, varargin)
 
 if nargin < 1
     bidsFolder = uigetdir('Pick a BIDS folder');
@@ -326,6 +326,22 @@ end
 % -----------------------------
 studyName = fullfile(opt.outputdir, [opt.studyName '.study']);
 [STUDY, ALLEEG]  = std_editset([], [], 'commands', commands, 'filename', studyName, 'task', task);
+
+% add BIDS info into each EEG
+EEG = [];
+for i=1:numel(ALLEEG)
+   set = ALLEEG(i);
+   set.BIDS = [];
+   set.BIDS.CHANGES = bids.CHANGES;
+   set.BIDS.gInfo = bids.dataset_description;
+   set.BIDS.gInfo.README = bids.README;
+   set.BIDS.pInfoDesc = bids.participantsJSON;
+   pInfoHeader = bids.participants(1,:);
+   pInfo = [pInfoHeader; bids.participants(strcmp({bids.participants{:,1}}, set.subject), :)];
+   set.BIDS.pInfo = pInfo;
+   EEG = [EEG set];
+end
+
 if ~isempty(options)
     commands = sprintf('[STUDY, ALLEEG] = pop_importbids(''%s'', %s);', bidsFolder, vararg2str(options));
 else
