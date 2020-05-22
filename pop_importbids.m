@@ -156,6 +156,9 @@ for iSubject = 1:size(bids.participants,1)
         
         % which raw data - with folder inheritance
         eegFile     = dir(fullfile(subjectFolder{iFold}, '*eeg.*'));
+        channelFile = searchparent(subjectFolder{iFold}, '*_channels.tsv');
+        elecFile    = searchparent(subjectFolder{iFold}, '*_electrodes.tsv');
+        eventFile   = dir(fullfile(subjectFolder{iFold}, '*_events.tsv'));
         
         % raw data
         allFiles = { eegFile.name };
@@ -188,14 +191,14 @@ for iSubject = 1:size(bids.participants,1)
             % what is the run
             iRun = 1;
             ind = strfind(eegFileRaw, '_run-');
-            if ~isempty(ind)
+            if ~isempty(ind) % multiple run
                 iRun = str2double(eegFileRaw(ind(1)+5:ind(1)+6));
                 if isnan(iRun) || iRun == 0, error('Problem converting run information'); end
+                channelFile = searchparent(subjectFolder{iFold}, sprintf('*run-%02d_channels.tsv', iRun));
+                elecFile    = searchparent(subjectFolder{iFold}, sprintf('*run-%02d_electrodes.tsv', iRun));
+                eventFile   = dir(fullfile(subjectFolder{iFold}, sprintf('*run-%02d_events.tsv', iRun)));
             end
-            channelFile = searchparent(subjectFolder{iFold}, sprintf('*run-%02d_channels.tsv', iRun));
-            elecFile    = searchparent(subjectFolder{iFold}, sprintf('*run-%02d_electrodes.tsv', iRun));
-            eventFile   = dir(fullfile(subjectFolder{iFold}, sprintf('*run-%02d_events.tsv', iRun)));
-        
+            
             % extract task name
             underScores = find(tmpFileName == '_');
             if ~strcmpi(tmpFileName(underScores(end)+1:end), 'eeg')
