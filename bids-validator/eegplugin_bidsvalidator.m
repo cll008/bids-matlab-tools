@@ -15,19 +15,15 @@ function vers = eegplugin_bidsvalidator(fig, trystrs, catchstrs)
         error('eegplugin_bidsvalidator requires 3 arguments');
     end
     
-%     % add folder to path
-%     % ------------------
-%     p = which('pop_importbids.m');
-%     p = p(1:findstr(p,'pop_importbids.m')-1);
-%     if ~exist('pop_importbids')
-%         addpath( p );
-%     end
-    
-    % find data menu
-    % ---------------------
-    menui = findobj(fig, 'label', 'File');
-    
-    % create BIDS menus
-    % -----------------
-    comvalidatebids = [ trystrs.no_check 'pop_validatebids();' catchstrs.add_to_hist ];
-    uimenu( menui, 'label', 'Validate BIDS dataset', 'separator', 'on','callback', comvalidatebids, 'position', 6, 'userdata', 'startup:on;study:on');
+    if ~plugin_status('bids-matlab-tools')
+        warning("This plugin requires the installation of bids-matlab-tools plugin which is currently not installed. Installing bids-matlab-tools...");
+        % download plugin
+        plugins = plugin_getweb('', []);
+        indPlugin = strmatch(lower('bids-matlab-tools'), lower({ plugins.name }), 'exact');
+        if isempty(indPlugin)
+            error('Failed to install bids-matlab-tools. Please try to install it manually then run eeglab again');
+        end
+        % install
+        plugin_install(plugins(indPlugin(1)).zip, plugins(indPlugin(1)).name, plugins(indPlugin(1)).version, true);
+        eegplugin_bids(fig, trystrs, catchstrs);
+    end
