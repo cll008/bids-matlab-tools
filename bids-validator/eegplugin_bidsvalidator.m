@@ -10,7 +10,7 @@
 
 function vers = eegplugin_bidsvalidator(fig, trystrs, catchstrs)
 
-    vers = '1.0';
+    vers = '1.1';
     if nargin < 3
         error('eegplugin_bidsvalidator requires 3 arguments');
     end
