@@ -22,6 +22,10 @@ Similarly raw EEG data files often define channel labels. However, BIDS also def
 
 Finally, user may select an output folder for storing their EEGLAB STUDY. If a folder is not selected, EEGLAB will store STUDY files ''in place'' which means in the BIDS folder structure - resulting in the BIDS folder becoming non-BIDS compliant and failing to pass BIDS validation because of the additional EEGLAB files.
 
+# BIDS validator
+
+We compiled the bids-validator cli tool to provide as an EEGLAB plugin. The plugin is maintained at https://github.com/sccn/bids-matlab-tools/tree/validator/bids-validator
+
 # Version history
 
 v1.0 - initial version
