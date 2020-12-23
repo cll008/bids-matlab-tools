@@ -608,6 +608,7 @@ end
 tInfo = opt.tInfo;
 [~,~,ext] = fileparts(fileOut);
 if strcmpi(ext, '.bdf')
+% if strcmpi(ext, {'.bdf', 'edf'}) % does edf also need subject ID removed?
     fileIDIn  = fopen(fileIn,'rb','ieee-le');  % see sopen
     fileIDOut = fopen(fileOut,'wb','ieee-le');  % see sopen
     data = fread(fileIDIn, Inf);
@@ -615,8 +616,10 @@ if strcmpi(ext, '.bdf')
     fwrite(fileIDOut, data);
     fclose(fileIDIn);
     fclose(fileIDOut);
+%     if strcmpi(ext, '.bdf')
     tInfo.EEGReference = 'CMS/DRL';
     tInfo.Manufacturer = 'BIOSEMI';
+%     end
     EEG = pop_biosig(fileOut);
 elseif strcmpi(ext, '.set')
     [outfilepath, outfilename,outfileext] = fileparts(fileOut);
@@ -629,23 +632,23 @@ elseif strcmpi(ext, '.set')
     end
 elseif strcmpi(ext, '.cnt')
     EEG = pop_loadcnt(fileIn, 'dataformat', 'int16');
-    pop_saveset(EEG, 'filename', fileOut);
 elseif strcmpi(ext, '.mff')
     EEG = pop_mffimport(fileIn,{'code'});
-    pop_saveset(EEG, 'filename', fileOut);
 elseif strcmpi(ext, '.raw')
     EEG = pop_readegi(fileIn);
-    pop_saveset(EEG, 'filename', fileOut);
 elseif strcmpi(ext, '.eeg')
     [tmpPath,tmpFileName,~] = fileparts(fileIn);
     if exist(fullfile(tmpPath, [tmpFileName '.vhdr']), 'file')
         EEG = pop_loadbv( tmpPath, [tmpFileName '.vhdr'] );
-        pop_saveset(EEG, 'filename', fileOut);
     else
         error('.eeg files not from BrainVision are currently not supported')
     end
 else
     error('Data format not supported');
+end
+
+if ~strcmpi(ext, {'.bdf','.edf', '.set'})
+    pop_saveset(EEG, 'filename', fileOut);
 end
 
 % Getting events latency
